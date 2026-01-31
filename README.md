@@ -12,7 +12,7 @@ This project demonstrates a complete CI/CD pipeline for deploying a containerize
 - [Security Best Practices](#security-best-practices)
 
 ## Architecture Overview
-System Architecture
+
 The infrastructure is built around a secure Virtual Private Cloud (VPC) environment, segmented into public and private layers to ensure a high level of security.
 
 1. Network & Traffic Management
