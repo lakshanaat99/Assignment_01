@@ -5,7 +5,6 @@ This project demonstrates a complete CI/CD pipeline for deploying a containerize
 ## Table of Contents
 
 - [Architecture Overview](#architecture-overview)
-- [Features](#features)
 - [Project Structure](#project-structure)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Testing the Application](#testing-the-application)
@@ -13,91 +12,38 @@ This project demonstrates a complete CI/CD pipeline for deploying a containerize
 - [Security Best Practices](#security-best-practices)
 
 ## Architecture Overview
+System Architecture
+The infrastructure is built around a secure Virtual Private Cloud (VPC) environment, segmented into public and private layers to ensure a high level of security.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        GitHub Actions                        │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  1. Build Docker Image                                │  │
-│  │  2. Push to Amazon ECR                                │  │
-│  │  3. Update ECS Task Definition                        │  │
-│  │  4. Deploy to ECS Fargate Service                     │  │
-│  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         AWS Cloud                            │
-│                                                              │
-│  ┌──────────────┐      ┌──────────────┐                    │
-│  │  Public      │      │  Private     │                    │
-│  │  Subnets      │      │  Subnets     │                    │
-│  │              │      │              │                    │
-│  │  ┌────────┐  │      │  ┌────────┐  │                    │
-│  │  │  ALB   │──┼──────┼──│  ECS   │  │                    │
-│  │  │        │  │      │  │ Tasks  │  │                    │
-│  │  └────────┘  │      │  └────────┘  │                    │
-│  │              │      │              │                    │
-│  │  ┌────────┐  │      │              │                    │
-│  │  │  NAT   │  │      │              │                    │
-│  │  │ Gateway│  │      │              │                    │
-│  │  └────────┘  │      │              │                    │
-│  └──────────────┘      └──────────────┘                    │
-│         │                      │                             │
-│         └──────────┬──────────┘                             │
-│                    │                                        │
-│              ┌─────▼─────┐                                 │
-│              │    VPC     │                                 │
-│              └────────────┘                                 │
-│                                                              │
-│  ┌──────────────────────────────────────────────┐          │
-│  │           Amazon ECR Repository               │          │
-│  │  (Container Image Storage)                    │          │
-│  └──────────────────────────────────────────────┘          │
-└─────────────────────────────────────────────────────────────┘
-```
+1. Network & Traffic Management
+Public and Private Subnets: To safeguard the application, all core logic (ECS Tasks) resides in Private Subnets. These are not directly accessible from the internet. The Public Subnets house the entry points, specifically the Load Balancer and NAT Gateways.
 
-### Architecture Components
+Application Load Balancer (ALB): This serves as the single point of contact for clients. It routes incoming traffic on port 80 to the healthy container instances in the background, ensuring smooth traffic distribution.
 
-1. **VPC with Public and Private Subnets**
-   - Public subnets host the Application Load Balancer and NAT Gateways
-   - Private subnets host ECS Fargate tasks for security
-   - Multi-AZ deployment for high availability
+NAT Gateway: This allows the private containers to securely access the internet for updates or external API calls without exposing them to inbound threats.
 
-2. **Application Load Balancer (ALB)**
-   - Distributes traffic across ECS tasks
-   - Health checks on `/health` endpoint
-   - Accessible on port 80
+2. Compute & Container Orchestration
+AWS Fargate (ECS): We utilize a serverless compute engine for our containers. By using Fargate, we don't have to manage underlying servers; we simply define the resources (CPU/Memory) needed, and AWS handles the scaling and maintenance.
 
-3. **ECS Fargate Cluster**
-   - Serverless container platform
-   - Auto-scaling capabilities
-   - Task definitions with health checks
+Amazon ECR: This acts as our private repository. Every time a new version of the application is built, it is stored here as a Docker image.
 
-4. **Amazon ECR**
-   - Private Docker registry
-   - Image scanning enabled
-   - Lifecycle policies for cost optimization
+Deployment Pipeline (CI/CD)
+The deployment process is fully automated using GitHub Actions, following a streamlined four-step workflow:
 
-5. **IAM Roles and Policies**
-   - Task execution role for ECS
-   - Task role for application permissions
-   - GitHub Actions role with OIDC authentication
+Build: A Docker image is created from the latest source code.
 
-6. **CloudWatch Logs**
-   - Centralized logging for ECS tasks
-   - Log retention configured
+Registry: The image is pushed to Amazon ECR, where it is scanned for security vulnerabilities.
 
-## Features
+Definition: The ECS Task Definition is updated to point to the new image version.
 
-- **Infrastructure as Code**: Complete infrastructure defined in Terraform
-- **Automated CI/CD**: GitHub Actions pipeline for automated deployments
-- **Secure Authentication**: OIDC-based authentication (no AWS credentials in code)
-- **High Availability**: Multi-AZ deployment with load balancing
-- **Health Checks**: Application and ALB health checks configured
-- **Cost Optimization**: ECR lifecycle policies and efficient resource allocation
-- **Security Best Practices**: Private subnets, security groups, least privilege IAM
-- **Production Ready**: Logging, monitoring, and error handling
+Rollout: ECS performs a "rolling update," replacing old containers with new ones only after they pass health checks.
+
+Core Security & Reliability Features
+Identity & Access Management (IAM): The system uses the principle of least privilege. GitHub Actions connects to AWS via OIDC, meaning no permanent AWS keys are stored in the repository, significantly reducing the risk of credential leaks.
+
+High Availability: The architecture is deployed across multiple Availability Zones (Multi-AZ). If one AWS data center experiences an issue, the application remains online via the others.
+
+Monitoring & Observability: All application logs are centralized in Amazon CloudWatch, allowing for real-time monitoring of system health and performance.
 
 ## Project Structure
 
@@ -147,43 +93,39 @@ The CI/CD pipeline is triggered on every push to the `main` branch:
 - Service stability wait (ensures deployment success)
 - Deployment summary in GitHub Actions
 
-## Testing the Application
+### Testing the Application 
+Once the infrastructure is provisioned and the containers are deployed, we use the following methods to ensure the environment is stable and the application is reachable.
 
-### Health Check Endpoint
+1. Retrieving the Entry Point
+The application is accessed through the Application Load Balancer (ALB). Since Terraform manages the infrastructure, we extract the generated DNS name directly from the state file.
 
-```bash
-# Using curl
-curl http://<ALB_DNS_NAME>/health
+From the terraform directory, run:
 
-# Expected response:
-{
-  "status": "healthy",
-  "timestamp": "2024-01-XX...",
-  "uptime": 123.45,
-  "environment": "prod"
-}
 ```
+terraform output alb_dns_name
+This provides the public URL used for all subsequent production tests.
+```
+2. Connectivity & Health Verification
+The primary test is to verify that the ALB can successfully route traffic to the ECS tasks in the private subnet. We target the /health endpoint, which confirms that the container is not only running but internally functional.
 
-### Access the Application
+Command:
 
-1. **Via Browser**: Navigate to `http://<ALB_DNS_NAME>`
-2. **Via curl**:
-   ```bash
-   curl http://<ALB_DNS_NAME>/
-   ```
-
-### Local Testing
-
-```bash
-# Build and run locally
-cd app
-npm install
-npm start
-
-# Test in another terminal
+```
 curl http://localhost:8080/health
+Success Criteria: A successful connection returns a JSON object confirming a healthy status.
+This validates that the security groups, target groups, and NAT Gateways are all configured correctly to allow traffic flow.
 ```
+3. Local Development Environment
+To speed up the development cycle, the application was tested locally before being pushed to AWS, ensures the code is functional before initiating the CI/CD pipeline.
 
+Commands:
+```
+Initialization: Navigate to the app folder and run npm install to load dependencies.
+
+Execution: Run npm start to host the app on the local machine.
+
+Verification: Access http://localhost:8080/health to mirror the production health check.
+```
 ## Infrastructure Components
 
 ### VPC Configuration
