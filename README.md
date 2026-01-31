@@ -2,7 +2,7 @@
 
 This project demonstrates a complete CI/CD pipeline for deploying a containerized Node.js application to AWS ECS Fargate using Terraform for infrastructure as code and GitHub Actions for continuous deployment.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Architecture Overview](#architecture-overview)
 - [Features](#features)
@@ -15,7 +15,7 @@ This project demonstrates a complete CI/CD pipeline for deploying a containerize
 - [Security Best Practices](#security-best-practices)
 - [Troubleshooting](#troubleshooting)
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -91,18 +91,18 @@ This project demonstrates a complete CI/CD pipeline for deploying a containerize
    - Centralized logging for ECS tasks
    - Log retention configured
 
-## ✨ Features
+## Features
 
-- ✅ **Infrastructure as Code**: Complete infrastructure defined in Terraform
-- ✅ **Automated CI/CD**: GitHub Actions pipeline for automated deployments
-- ✅ **Secure Authentication**: OIDC-based authentication (no AWS credentials in code)
-- ✅ **High Availability**: Multi-AZ deployment with load balancing
-- ✅ **Health Checks**: Application and ALB health checks configured
-- ✅ **Cost Optimization**: ECR lifecycle policies and efficient resource allocation
-- ✅ **Security Best Practices**: Private subnets, security groups, least privilege IAM
-- ✅ **Production Ready**: Logging, monitoring, and error handling
+- **Infrastructure as Code**: Complete infrastructure defined in Terraform
+- **Automated CI/CD**: GitHub Actions pipeline for automated deployments
+- **Secure Authentication**: OIDC-based authentication (no AWS credentials in code)
+- **High Availability**: Multi-AZ deployment with load balancing
+- **Health Checks**: Application and ALB health checks configured
+- **Cost Optimization**: ECR lifecycle policies and efficient resource allocation
+- **Security Best Practices**: Private subnets, security groups, least privilege IAM
+- **Production Ready**: Logging, monitoring, and error handling
 
-## 📦 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following:
 
@@ -113,7 +113,7 @@ Before you begin, ensure you have the following:
 5. **Docker** installed (for local testing)
 6. **Node.js** (for local application testing)
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 .
@@ -139,7 +139,7 @@ Before you begin, ensure you have the following:
 └── README.md              # This file
 ```
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### Step 1: Clone and Prepare Repository
 
@@ -207,7 +207,7 @@ git push origin main
 
 The GitHub Actions workflow will automatically trigger and deploy your application.
 
-## 🔄 CI/CD Pipeline
+## CI/CD Pipeline
 
 The CI/CD pipeline is triggered on every push to the `main` branch:
 
@@ -224,13 +224,13 @@ The CI/CD pipeline is triggered on every push to the `main` branch:
 
 ### Workflow Features
 
-- ✅ Automatic deployment on push to main
-- ✅ Manual trigger option (`workflow_dispatch`)
-- ✅ OIDC authentication (no AWS keys in secrets)
-- ✅ Service stability wait (ensures deployment success)
-- ✅ Deployment summary in GitHub Actions
+- Automatic deployment on push to main
+- Manual trigger option (`workflow_dispatch`)
+- OIDC authentication (no AWS keys in secrets)
+- Service stability wait (ensures deployment success)
+- Deployment summary in GitHub Actions
 
-## 🧪 Testing the Application
+## Testing the Application
 
 ### Health Check Endpoint
 
@@ -296,7 +296,7 @@ curl http://localhost:8080/health
 - **ALB SG**: Allows HTTP (80) and HTTPS (443) from internet
 - **ECS SG**: Allows traffic from ALB on port 8080
 
-## 🔒 Security Best Practices
+## Security Best Practices
 
 1. **No AWS Credentials in Code**
    - Uses OIDC for GitHub Actions authentication
@@ -321,7 +321,7 @@ curl http://localhost:8080/health
    - ECR images encrypted at rest
    - In-transit encryption via HTTPS (can be extended)
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -398,7 +398,7 @@ Monitor in CloudWatch:
 - Task count
 - Service health
 
-## 📝 Additional Notes
+## Additional Notes
 
 - **Cost Optimization**: Consider using Fargate Spot for non-production workloads
 - **Scaling**: Configure auto-scaling based on CPU/memory metrics
@@ -406,28 +406,26 @@ Monitor in CloudWatch:
 - **Custom Domain**: Configure Route 53 for custom domain name
 - **Backup**: Consider backing up Terraform state to S3
 
-## 🎯 Assignment Requirements Checklist
+## Assignment Requirements Checklist
 
-- ✅ Terraform Infrastructure (VPC, ECS Fargate, ECR, IAM, ALB)
-- ✅ Node.js Application on port 8080
-- ✅ Dockerfile for containerization
-- ✅ GitHub Actions CI/CD Pipeline
-- ✅ OIDC Authentication (no AWS credentials)
-- ✅ Automated build and push to ECR
-- ✅ ECS deployment with service stability wait
-- ✅ Health check endpoint
-- ✅ Application Load Balancer with health checks
-- ✅ Comprehensive README with architecture
-- ✅ Security best practices implemented
+- Terraform Infrastructure (VPC, ECS Fargate, ECR, IAM, ALB)
+- Node.js Application on port 8080
+- Dockerfile for containerization
+- GitHub Actions CI/CD Pipeline
+- OIDC Authentication (no AWS credentials)
+- Automated build and push to ECR
+- ECS deployment with service stability wait
+- Health check endpoint
+- Application Load Balancer with health checks
+- Comprehensive README with architecture
+- Security best practices implemented
 
-## 📄 License
+## 📄License
 
-This project is created for educational purposes as part of the Cloud Infrastructure Design assignment.
+This project is created for the Cloud Infrastructure Design assignment.
 
 ## 👤 Author
 
-[Your Name]
+[A.A.T.Lakshan]
 
 ---
-
-**Note**: Remember to include your name in the webpage as required by the assignment. The application displays deployment information and can be customized to include your name.
