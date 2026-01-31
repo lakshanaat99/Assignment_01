@@ -3,7 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 
-const STUDENT_NAME_SID = "A.A.T.Lakshan_22UG1-0309";
+const STUDENT_NAME_and_SID = "A.A.T.Lakshan_22UG1-0309";
 
 // Middleware
 app.use(express.json());
