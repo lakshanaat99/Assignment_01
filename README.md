@@ -6,14 +6,11 @@ This project demonstrates a complete CI/CD pipeline for deploying a containerize
 
 - [Architecture Overview](#architecture-overview)
 - [Features](#features)
-- [Prerequisites](#prerequisites)
 - [Project Structure](#project-structure)
-- [Setup Instructions](#setup-instructions)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Testing the Application](#testing-the-application)
 - [Infrastructure Components](#infrastructure-components)
 - [Security Best Practices](#security-best-practices)
-- [Troubleshooting](#troubleshooting)
 
 ## Architecture Overview
 
@@ -102,17 +99,6 @@ This project demonstrates a complete CI/CD pipeline for deploying a containerize
 - **Security Best Practices**: Private subnets, security groups, least privilege IAM
 - **Production Ready**: Logging, monitoring, and error handling
 
-## Prerequisites
-
-Before you begin, ensure you have the following:
-
-1. **AWS Account** with appropriate permissions
-2. **Terraform** (>= 1.0) installed
-3. **AWS CLI** configured with credentials
-4. **GitHub Account** with a repository
-5. **Docker** installed (for local testing)
-6. **Node.js** (for local application testing)
-
 ## Project Structure
 
 ```
@@ -138,75 +124,6 @@ Before you begin, ensure you have the following:
 ├── .gitignore             # Git ignore rules
 └── README.md              # This file
 ```
-
-## Setup Instructions
-
-### Step 1: Clone and Prepare Repository
-
-```bash
-git clone <your-repo-url>
-cd <repo-directory>
-```
-
-### Step 2: Configure Terraform Variables
-
-Create a `terraform/terraform.tfvars` file:
-
-```hcl
-aws_region    = "us-east-1"
-environment   = "prod"
-app_name      = "fargate-app"
-github_repo    = "your-username/your-repo-name"
-github_branch  = "main"
-enable_alb     = true
-desired_count  = 2
-```
-
-### Step 3: Deploy Infrastructure with Terraform
-
-```bash
-cd terraform
-
-# Initialize Terraform
-terraform init
-
-# Review the execution plan
-terraform plan
-
-# Apply the infrastructure
-terraform apply
-```
-
-After successful deployment, note the outputs:
-- `ecr_repository_url`: ECR repository URL
-- `alb_url`: Application Load Balancer URL
-- `github_actions_role_arn`: IAM role ARN for GitHub Actions
-
-### Step 4: Configure GitHub Secrets
-
-1. Go to your GitHub repository → Settings → Secrets and variables → Actions
-2. Add the following secret:
-   - **Name**: `AWS_ROLE_ARN`
-   - **Value**: Copy the `github_actions_role_arn` from Terraform outputs
-
-### Step 5: Update GitHub Actions Workflow
-
-Update `.github/workflows/deploy.yml` with your specific values:
-- `ECR_REPOSITORY`: Your ECR repository name
-- `ECS_CLUSTER`: Your ECS cluster name
-- `ECS_SERVICE`: Your ECS service name
-- `ECS_TASK_DEFINITION`: Your task definition name
-
-### Step 6: Push to GitHub
-
-```bash
-git add .
-git commit -m "Initial commit: ECS Fargate deployment setup"
-git push origin main
-```
-
-The GitHub Actions workflow will automatically trigger and deploy your application.
-
 ## CI/CD Pipeline
 
 The CI/CD pipeline is triggered on every push to the `main` branch:
@@ -267,7 +184,7 @@ npm start
 curl http://localhost:8080/health
 ```
 
-## 🏛️ Infrastructure Components
+## Infrastructure Components
 
 ### VPC Configuration
 
@@ -311,120 +228,11 @@ curl http://localhost:8080/health
    - GitHub Actions role with minimal required permissions
 
 4. **Security Groups**
-   - Restrictive ingress rules
    - Only necessary ports open
-
-5. **ECR Image Scanning**
-   - Automatic vulnerability scanning enabled
-
-6. **Encryption**
-   - ECR images encrypted at rest
-   - In-transit encryption via HTTPS (can be extended)
-
-## Troubleshooting
-
-### Common Issues
-
-#### 1. GitHub Actions Authentication Fails
-
-**Problem**: `Error: Could not assume role`
-
-**Solution**:
-- Verify `AWS_ROLE_ARN` secret is set correctly
-- Ensure OIDC provider is configured in AWS
-- Check IAM role trust policy includes your GitHub repo
-
-#### 2. ECS Service Not Updating
-
-**Problem**: Service remains in previous version
-
-**Solution**:
-- Check CloudWatch logs for errors
-- Verify task definition is updated
-- Check service events in ECS console
-
-#### 3. Application Not Accessible
-
-**Problem**: Cannot reach application via ALB
-
-**Solution**:
-- Verify security group rules allow traffic
-- Check ALB target group health
-- Ensure ECS tasks are running and healthy
-- Verify ALB listener is configured correctly
-
-#### 4. Docker Build Fails
-
-**Problem**: GitHub Actions build step fails
-
-**Solution**:
-- Check Dockerfile syntax
-- Verify all dependencies in package.json
-- Review build logs in GitHub Actions
-
-### Useful Commands
-
-```bash
-# Check ECS service status
-aws ecs describe-services \
-  --cluster fargate-app-cluster \
-  --services fargate-app-service
-
-# View CloudWatch logs
-aws logs tail /ecs/fargate-app --follow
-
-# Check ALB target health
-aws elbv2 describe-target-health \
-  --target-group-arn <target-group-arn>
-
-# List ECR images
-aws ecr list-images \
-  --repository-name fargate-app
-```
-
-## 📊 Monitoring and Logs
-
-### CloudWatch Logs
-
-- **Log Group**: `/ecs/fargate-app`
-- **Retention**: 7 days
-- **Access**: AWS Console → CloudWatch → Log Groups
-
-### ECS Service Metrics
-
-Monitor in CloudWatch:
-- CPU utilization
-- Memory utilization
-- Task count
-- Service health
-
-## Additional Notes
-
-- **Cost Optimization**: Consider using Fargate Spot for non-production workloads
-- **Scaling**: Configure auto-scaling based on CPU/memory metrics
-- **HTTPS**: Add ACM certificate and HTTPS listener for production
-- **Custom Domain**: Configure Route 53 for custom domain name
-- **Backup**: Consider backing up Terraform state to S3
-
-## Assignment Requirements Checklist
-
-- Terraform Infrastructure (VPC, ECS Fargate, ECR, IAM, ALB)
-- Node.js Application on port 8080
-- Dockerfile for containerization
-- GitHub Actions CI/CD Pipeline
-- OIDC Authentication (no AWS credentials)
-- Automated build and push to ECR
-- ECS deployment with service stability wait
-- Health check endpoint
-- Application Load Balancer with health checks
-- Comprehensive README with architecture
-- Security best practices implemented
-
-## 📄License
 
 This project is created for the Cloud Infrastructure Design assignment.
 
-## 👤 Author
+## Author
 
 [A.A.T.Lakshan]
 
