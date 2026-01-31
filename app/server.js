@@ -79,7 +79,7 @@ app.get('/', (req, res) => {
     </head>
     <body>
         <div class="container">
-            <h1>🚀 AWS ECS Fargate</h1>
+            <h1>AWS ECS Fargate</h1>
             <div class="status">Application Running Successfully</div>
             <div class="info">
                 <h2>Deployment Information</h2>
