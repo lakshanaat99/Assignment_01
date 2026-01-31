@@ -41,3 +41,12 @@ Thumbs.db
 # Build outputs
 dist/
 build/
+
+# PDF files (optional - uncomment if you don't want PDFs in repo)
+# *.pdf
+# Labs/
+# Lecure Notes/
+# Assignment 1.pdf
+
+# Temporary files
+New Text Document.txt
