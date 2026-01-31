@@ -42,7 +42,7 @@ Thumbs.db
 dist/
 build/
 
-# PDF files (optional - uncomment if you don't want PDFs in repo)
+# PDF files
 # *.pdf
 # Labs/
 # Lecure Notes/
