@@ -27,6 +27,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Fail fast with a clear error if AWS_ROLE_ARN is missing or invalid
+      - name: Validate AWS role ARN
+        run: |
+          if [ -z "${{ secrets.AWS_ROLE_ARN }}" ]; then
+            echo "::error::AWS_ROLE_ARN secret is not set. Add it in GitHub: Settings → Secrets and variables → Actions."
+            echo "Get the value after Terraform apply: terraform output -raw github_actions_role_arn"
+            exit 1
+          fi
+          if ! echo "${{ secrets.AWS_ROLE_ARN }}" | grep -qE '^arn:aws:iam::[0-9]{12}:role/.+'; then
+            echo "::error::AWS_ROLE_ARN must be a valid IAM role ARN: arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME"
+            echo "Get the correct value: terraform output -raw github_actions_role_arn"
+            exit 1
+          fi
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -43,8 +57,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build Docker image
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          # Build Docker image (Dockerfile and app are in app/)
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG app
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           
           # Push both tags
