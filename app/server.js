@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// TODO: Replace with your name for assignment submission
-const STUDENT_NAME = "Your Name Here";
+
+const STUDENT_NAME = "A.A.T.Lakshan_22UG1-0309";
 
 // Middleware
 app.use(express.json());
@@ -80,7 +80,7 @@ app.get('/', (req, res) => {
     <body>
         <div class="container">
             <h1>🚀 AWS ECS Fargate</h1>
-            <div class="status">✅ Application Running Successfully</div>
+            <div class="status">Application Running Successfully</div>
             <div class="info">
                 <h2>Deployment Information</h2>
                 <div class="details">
